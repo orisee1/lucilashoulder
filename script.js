@@ -165,19 +165,28 @@ const Utils = {
     },
     
     /**
-     * Smooth scroll cross-browser
+     * Smooth scroll cross-browser - OTIMIZADO PARA MOBILE
      */
     smoothScrollTo(element, offset = 0) {
         const targetPosition = element.offsetTop - offset;
         
-        if ('scrollBehavior' in document.documentElement.style) {
+        // Em mobile, usa scroll natural para melhor performance
+        if (DeviceDetector.isMobile) {
             window.scrollTo({
                 top: targetPosition,
-                behavior: 'smooth'
+                behavior: 'auto' // Scroll natural em mobile
             });
         } else {
-            // Fallback para browsers antigos
-            this.animateScrollTo(targetPosition);
+            // Desktop mantém smooth scroll
+            if ('scrollBehavior' in document.documentElement.style) {
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            } else {
+                // Fallback para browsers antigos
+                this.animateScrollTo(targetPosition);
+            }
         }
     },
     
@@ -317,46 +326,46 @@ class PortfolioManager {
         // Visibilidade da página
         document.addEventListener('visibilitychange', () => this.handleVisibilityChange());
         
-        // Touch events para mobile
-        if (DeviceDetector.hasTouch) {
-            this.setupTouchEvents();
-        }
+        // Touch events para mobile - DESABILITADO para scroll natural
+        // if (DeviceDetector.hasTouch) {
+        //     this.setupTouchEvents();
+        // }
     }
     
     /**
-     * Configura eventos de touch para mobile
+     * Configura eventos de touch para mobile - DESABILITADO
      */
-    setupTouchEvents() {
-        let touchStartY = 0;
-        let touchEndY = 0;
+    // setupTouchEvents() {
+    //     let touchStartY = 0;
+    //     let touchEndY = 0;
         
-        document.addEventListener('touchstart', (e) => {
-            touchStartY = e.changedTouches[0].screenY;
-        }, { passive: true });
+    //     document.addEventListener('touchstart', (e) => {
+    //         touchStartY = e.changedTouches[0].screenY;
+    //     }, { passive: true });
         
-        document.addEventListener('touchend', (e) => {
-            touchEndY = e.changedTouches[0].screenY;
-            this.handleSwipe(touchStartY, touchEndY);
-        }, { passive: true });
-    }
+    //     document.addEventListener('touchend', (e) => {
+    //         touchEndY = e.changedTouches[0].screenY;
+    //         this.handleSwipe(touchStartY, touchEndY);
+    //     }, { passive: true });
+    // }
     
     /**
-     * Gerencia gestos de swipe (mobile)
+     * Gerencia gestos de swipe (mobile) - DESABILITADO
      */
-    handleSwipe(startY, endY) {
-        const swipeThreshold = 100;
-        const diff = startY - endY;
+    // handleSwipe(startY, endY) {
+    //     const swipeThreshold = 100;
+    //     const diff = startY - endY;
         
-        if (Math.abs(diff) > swipeThreshold) {
-            if (diff > 0) {
-                // Swipe up - pode implementar navegação para próxima seção
-                this.components.navigation.goToNextSection();
-            } else {
-                // Swipe down - pode implementar navegação para seção anterior
-                this.components.navigation.goToPreviousSection();
-            }
-        }
-    }
+    //     if (Math.abs(diff) > swipeThreshold) {
+    //         if (diff > 0) {
+    //             // Swipe up - pode implementar navegação para próxima seção
+    //             this.components.navigation.goToNextSection();
+    //         } else {
+    //             // Swipe down - pode implementar navegação para seção anterior
+    //             this.components.navigation.goToPreviousSection();
+    //         }
+    //     }
+    // }
     
     /**
      * Gerencia scroll global
@@ -526,8 +535,20 @@ class NavigationManager {
             this.currentSection = sectionIndex;
         }
         
-        // Scroll suave
-        Utils.smoothScrollTo(targetElement, headerHeight);
+        // Scroll otimizado por dispositivo
+        if (DeviceDetector.isMobile) {
+            // Mobile: scroll instantâneo e natural
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'auto'
+            });
+        } else {
+            // Desktop: scroll suave
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
+        }
         
         // Atualiza URL
         const targetId = targetElement.getAttribute('id');
@@ -537,24 +558,24 @@ class NavigationManager {
     }
     
     /**
-     * Navegação para próxima seção (swipe/teclas)
+     * Navegação para próxima seção - DESABILITADO para scroll natural
      */
-    goToNextSection() {
-        if (this.currentSection < this.sections.length - 1) {
-            this.currentSection++;
-            this.scrollToSection(this.sections[this.currentSection], this.currentSection);
-        }
-    }
+    // goToNextSection() {
+    //     if (this.currentSection < this.sections.length - 1) {
+    //         this.currentSection++;
+    //         this.scrollToSection(this.sections[this.currentSection], this.currentSection);
+    //     }
+    // }
     
     /**
-     * Navegação para seção anterior (swipe/teclas)
+     * Navegação para seção anterior - DESABILITADO para scroll natural
      */
-    goToPreviousSection() {
-        if (this.currentSection > 0) {
-            this.currentSection--;
-            this.scrollToSection(this.sections[this.currentSection], this.currentSection);
-        }
-    }
+    // goToPreviousSection() {
+    //     if (this.currentSection > 0) {
+    //         this.currentSection--;
+    //         this.scrollToSection(this.sections[this.currentSection], this.currentSection);
+    //     }
+    // }
     
     /**
      * Toggle do menu mobile
@@ -954,7 +975,12 @@ class ScrollManager {
     setupBackToTop() {
         if (this.backToTopBtn) {
             this.backToTopBtn.addEventListener('click', () => {
-                Utils.smoothScrollTo(document.documentElement, 0);
+                // Scroll otimizado para cada dispositivo
+                if (DeviceDetector.isMobile) {
+                    window.scrollTo({ top: 0, behavior: 'auto' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             });
         }
     }
@@ -1418,23 +1444,13 @@ class InteractionManager {
     }
     
     /**
-     * Configura navegação por teclado
+     * Configura navegação por teclado - AJUSTADO para não interferir
      */
     setupKeyboardNavigation() {
         document.addEventListener('keydown', (e) => {
-            // Navegação por setas (só se não estiver em input)
-            if (!e.target.matches('input, textarea, select')) {
+            // Só ativa navegação com teclas específicas e sem interferir no scroll
+            if (!e.target.matches('input, textarea, select') && e.ctrlKey) {
                 switch(e.key) {
-                    case 'ArrowDown':
-                    case 'PageDown':
-                        e.preventDefault();
-                        portfolio.components.navigation.goToNextSection();
-                        break;
-                    case 'ArrowUp':
-                    case 'PageUp':
-                        e.preventDefault();
-                        portfolio.components.navigation.goToPreviousSection();
-                        break;
                     case 'Home':
                         e.preventDefault();
                         window.scrollTo({ top: 0, behavior: 'smooth' });
