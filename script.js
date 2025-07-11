@@ -165,28 +165,19 @@ const Utils = {
     },
     
     /**
-     * Smooth scroll cross-browser - OTIMIZADO PARA MOBILE
+     * Smooth scroll cross-browser
      */
     smoothScrollTo(element, offset = 0) {
         const targetPosition = element.offsetTop - offset;
         
-        // Em mobile, usa scroll natural para melhor performance
-        if (DeviceDetector.isMobile) {
+        if ('scrollBehavior' in document.documentElement.style) {
             window.scrollTo({
                 top: targetPosition,
-                behavior: 'auto' // Scroll natural em mobile
+                behavior: 'smooth'
             });
         } else {
-            // Desktop mantém smooth scroll
-            if ('scrollBehavior' in document.documentElement.style) {
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            } else {
-                // Fallback para browsers antigos
-                this.animateScrollTo(targetPosition);
-            }
+            // Fallback para browsers antigos
+            this.animateScrollTo(targetPosition);
         }
     },
     
@@ -236,6 +227,135 @@ const Utils = {
 
 /**
  * =========================================
+ * SISTEMA DE MAPS MODAL - MARIA LUCILA
+ * Funcionalidade completa de mapa interativo
+ * =========================================
+ */
+
+// Configuração do Maps
+const MAPS_CONFIG = {
+    embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.654231669195!2d-54.61881!3d-20.44785!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9486e7113bb11b73%3A0x4b5e9e8a1a6b7c9d!2sShoulder!5e0!3m2!1spt-BR!2sbr&q=Shoulder+Shopping+Campo+Grande",
+    directUrl: "https://g.co/kgs/aYXVKao"
+};
+
+/**
+ * Abre a modal do Maps com lazy loading
+ */
+function abrirMapsModal() {
+    const modal = document.getElementById('mapsModal');
+    const iframe = document.getElementById('mapsIframe');
+    
+    if (!modal || !iframe) {
+        console.error('Elementos da modal não encontrados');
+        return;
+    }
+    
+    // Lazy loading - só carrega o mapa quando abre a modal
+    if (!iframe.src) {
+        iframe.src = MAPS_CONFIG.embedUrl;
+    }
+    
+    // Mostra a modal
+    modal.classList.add('show');
+    
+    // Previne scroll do body
+    document.body.style.overflow = 'hidden';
+    
+    // Adiciona atributos de acessibilidade
+    modal.setAttribute('aria-hidden', 'false');
+    
+    // Foca no botão de fechar para navegação por teclado
+    setTimeout(() => {
+        const closeBtn = modal.querySelector('.maps-close');
+        if (closeBtn) closeBtn.focus();
+    }, 100);
+    
+    // Track evento (se analytics estiver disponível)
+    if (typeof trackEvent === 'function') {
+        trackEvent('Maps', 'Modal Opened', 'Shoulder Store Location');
+    }
+    
+    console.log('🗺️ Maps modal aberta com sucesso');
+}
+
+/**
+ * Fecha a modal do Maps
+ */
+function fecharMapsModal() {
+    const modal = document.getElementById('mapsModal');
+    
+    if (!modal) {
+        console.error('Modal não encontrada');
+        return;
+    }
+    
+    // Esconde a modal
+    modal.classList.remove('show');
+    
+    // Restaura scroll do body
+    document.body.style.overflow = '';
+    
+    // Atualiza atributos de acessibilidade
+    modal.setAttribute('aria-hidden', 'true');
+    
+    // Track evento (se analytics estiver disponível)
+    if (typeof trackEvent === 'function') {
+        trackEvent('Maps', 'Modal Closed', 'Shoulder Store Location');
+    }
+    
+    console.log('🗺️ Maps modal fechada');
+}
+
+/**
+ * Inicializa o sistema de Maps
+ */
+function initializeMapsSystem() {
+    // Event listener para tecla ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('mapsModal');
+            if (modal && modal.classList.contains('show')) {
+                fecharMapsModal();
+            }
+        }
+    });
+    
+    // Event listener para clique fora da modal
+    const modal = document.getElementById('mapsModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            // Só fecha se clicou no fundo (não no conteúdo)
+            if (e.target === modal) {
+                fecharMapsModal();
+            }
+        });
+    }
+    
+    // Adiciona atributos de acessibilidade inicial
+    if (modal) {
+        modal.setAttribute('aria-hidden', 'true');
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.setAttribute('aria-labelledby', 'maps-modal-title');
+    }
+    
+    console.log('🚀 Sistema de Maps inicializado com sucesso');
+}
+
+/**
+ * Função auxiliar para abrir diretamente no Google Maps
+ */
+function abrirGoogleMaps() {
+    window.open(MAPS_CONFIG.directUrl, '_blank', 'noopener,noreferrer');
+    
+    // Track evento
+    if (typeof trackEvent === 'function') {
+        trackEvent('Maps', 'External Link', 'Google Maps Direct');
+    }
+}
+
+/**
+ * =========================================
  * GERENCIADOR PRINCIPAL DO PORTFÓLIO
  * =========================================
  */
@@ -270,6 +390,9 @@ class PortfolioManager {
             
             // Inicializa animações
             this.initAnimations();
+            
+            // Inicializa sistema de Maps
+            initializeMapsSystem();
             
             // Finaliza carregamento
             this.finishLoading();
@@ -326,46 +449,46 @@ class PortfolioManager {
         // Visibilidade da página
         document.addEventListener('visibilitychange', () => this.handleVisibilityChange());
         
-        // Touch events para mobile - DESABILITADO para scroll natural
-        // if (DeviceDetector.hasTouch) {
-        //     this.setupTouchEvents();
-        // }
+        // Touch events para mobile
+        if (DeviceDetector.hasTouch) {
+            this.setupTouchEvents();
+        }
     }
     
     /**
-     * Configura eventos de touch para mobile - DESABILITADO
+     * Configura eventos de touch para mobile
      */
-    // setupTouchEvents() {
-    //     let touchStartY = 0;
-    //     let touchEndY = 0;
+    setupTouchEvents() {
+        let touchStartY = 0;
+        let touchEndY = 0;
         
-    //     document.addEventListener('touchstart', (e) => {
-    //         touchStartY = e.changedTouches[0].screenY;
-    //     }, { passive: true });
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
         
-    //     document.addEventListener('touchend', (e) => {
-    //         touchEndY = e.changedTouches[0].screenY;
-    //         this.handleSwipe(touchStartY, touchEndY);
-    //     }, { passive: true });
-    // }
+        document.addEventListener('touchend', (e) => {
+            touchEndY = e.changedTouches[0].screenY;
+            this.handleSwipe(touchStartY, touchEndY);
+        }, { passive: true });
+    }
     
     /**
-     * Gerencia gestos de swipe (mobile) - DESABILITADO
+     * Gerencia gestos de swipe (mobile)
      */
-    // handleSwipe(startY, endY) {
-    //     const swipeThreshold = 100;
-    //     const diff = startY - endY;
+    handleSwipe(startY, endY) {
+        const swipeThreshold = 100;
+        const diff = startY - endY;
         
-    //     if (Math.abs(diff) > swipeThreshold) {
-    //         if (diff > 0) {
-    //             // Swipe up - pode implementar navegação para próxima seção
-    //             this.components.navigation.goToNextSection();
-    //         } else {
-    //             // Swipe down - pode implementar navegação para seção anterior
-    //             this.components.navigation.goToPreviousSection();
-    //         }
-    //     }
-    // }
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                // Swipe up - pode implementar navegação para próxima seção
+                this.components.navigation.goToNextSection();
+            } else {
+                // Swipe down - pode implementar navegação para seção anterior
+                this.components.navigation.goToPreviousSection();
+            }
+        }
+    }
     
     /**
      * Gerencia scroll global
@@ -535,20 +658,8 @@ class NavigationManager {
             this.currentSection = sectionIndex;
         }
         
-        // Scroll otimizado por dispositivo
-        if (DeviceDetector.isMobile) {
-            // Mobile: scroll instantâneo e natural
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'auto'
-            });
-        } else {
-            // Desktop: scroll suave
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
-        }
+        // Scroll suave
+        Utils.smoothScrollTo(targetElement, headerHeight);
         
         // Atualiza URL
         const targetId = targetElement.getAttribute('id');
@@ -558,24 +669,24 @@ class NavigationManager {
     }
     
     /**
-     * Navegação para próxima seção - DESABILITADO para scroll natural
+     * Navegação para próxima seção (swipe/teclas)
      */
-    // goToNextSection() {
-    //     if (this.currentSection < this.sections.length - 1) {
-    //         this.currentSection++;
-    //         this.scrollToSection(this.sections[this.currentSection], this.currentSection);
-    //     }
-    // }
+    goToNextSection() {
+        if (this.currentSection < this.sections.length - 1) {
+            this.currentSection++;
+            this.scrollToSection(this.sections[this.currentSection], this.currentSection);
+        }
+    }
     
     /**
-     * Navegação para seção anterior - DESABILITADO para scroll natural
+     * Navegação para seção anterior (swipe/teclas)
      */
-    // goToPreviousSection() {
-    //     if (this.currentSection > 0) {
-    //         this.currentSection--;
-    //         this.scrollToSection(this.sections[this.currentSection], this.currentSection);
-    //     }
-    // }
+    goToPreviousSection() {
+        if (this.currentSection > 0) {
+            this.currentSection--;
+            this.scrollToSection(this.sections[this.currentSection], this.currentSection);
+        }
+    }
     
     /**
      * Toggle do menu mobile
@@ -975,12 +1086,7 @@ class ScrollManager {
     setupBackToTop() {
         if (this.backToTopBtn) {
             this.backToTopBtn.addEventListener('click', () => {
-                // Scroll otimizado para cada dispositivo
-                if (DeviceDetector.isMobile) {
-                    window.scrollTo({ top: 0, behavior: 'auto' });
-                } else {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
+                Utils.smoothScrollTo(document.documentElement, 0);
             });
         }
     }
@@ -1444,13 +1550,23 @@ class InteractionManager {
     }
     
     /**
-     * Configura navegação por teclado - AJUSTADO para não interferir
+     * Configura navegação por teclado
      */
     setupKeyboardNavigation() {
         document.addEventListener('keydown', (e) => {
-            // Só ativa navegação com teclas específicas e sem interferir no scroll
-            if (!e.target.matches('input, textarea, select') && e.ctrlKey) {
+            // Navegação por setas (só se não estiver em input)
+            if (!e.target.matches('input, textarea, select')) {
                 switch(e.key) {
+                    case 'ArrowDown':
+                    case 'PageDown':
+                        e.preventDefault();
+                        portfolio.components.navigation.goToNextSection();
+                        break;
+                    case 'ArrowUp':
+                    case 'PageUp':
+                        e.preventDefault();
+                        portfolio.components.navigation.goToPreviousSection();
+                        break;
                     case 'Home':
                         e.preventDefault();
                         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1693,7 +1809,12 @@ const trackEvent = (category, action, label = '') => {
     console.log(`📊 Event: ${category} - ${action} - ${label}`);
 };
 
-// Exporta para uso global
+// Exporta funções para uso global
 if (typeof window !== 'undefined') {
     window.trackEvent = trackEvent;
+    window.abrirMapsModal = abrirMapsModal;
+    window.fecharMapsModal = fecharMapsModal;
+    window.abrirGoogleMaps = abrirGoogleMaps;
 }
+
+console.log('🎯 Sistema completo de Maps carregado - Maria Lucila Portfolio');
