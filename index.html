@@ -311,6 +311,7 @@
             </div>
             
             <div class="contato-content">
+                <!-- COLUNA ESQUERDA: Informações de Contato -->
                 <div class="contato-info">
                     <div class="contato-item">
                         <div class="contato-icon">
@@ -342,10 +343,20 @@
                             <h4>Shoulder Store</h4>
                             <p>Shopping Campo Grande - MS</p>
                             <span>Seg a Sáb: 10h às 22h | Dom: 14h às 20h</span>
+                            
+                            <!-- Mini Mapa -->
+                        
+                            
+                            <!-- Botão Ver no Maps -->
+                            <button class="btn-maps" onclick="abrirMapsModal()" aria-label="Ver localização no Google Maps">
+                                <i class="fas fa-map-marked-alt"></i>
+                                <span>Ver no Maps</span>
+                            </button>
                         </div>
                     </div>
                 </div>
                 
+                <!-- COLUNA DIREITA: Formulário -->
                 <form class="contato-form" id="contatoForm" novalidate>
                     <h3>Envie uma mensagem</h3>
                     
@@ -386,7 +397,7 @@
                 <div class="footer-social">
                     <a href="https://wa.me/5567992865982" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                     <a href="https://www.instagram.com/sh_lucila?igsh=OGlzbHVvenE3ZWE=" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="mailto:lucilapeixoto48@gmail.com" aria-label="E-mail"><i class="fas fa-envelope"></i></a>
+                    <a href="mailto:contato@marialucila.com.br" aria-label="E-mail"><i class="fas fa-envelope"></i></a>
                 </div>
             </div>
             
@@ -400,6 +411,35 @@
     <button id="voltarTopo" class="voltar-topo" aria-label="Voltar ao topo">
         <i class="fas fa-arrow-up"></i>
     </button>
+
+    <!-- Modal do Maps -->
+    <div class="maps-modal" id="mapsModal" onclick="fecharMapsModal()">
+        <div class="maps-modal-content" onclick="event.stopPropagation()">
+            <div class="maps-modal-header">
+                <h3>Shoulder Store - Shopping Campo Grande</h3>
+                <button class="maps-close" onclick="fecharMapsModal()" aria-label="Fechar modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="maps-container">
+                <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3738.1834600605225!2d-54.5879604!3d-20.457656699999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9486e8961e3b0519%3A0x5ca318147734f5ed!2sSHOULDER%20-%20Campo%20Grande%20Shopping!5e0!3m2!1spt-BR!2sbr!4v1752199307343!5m2!1spt-BR!2sbr"
+                    id="mapsIframe" 
+                    width="100%" 
+                    height="100%" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+            <div class="maps-actions">
+                <a href="https://g.co/kgs/aYXVKao" target="_blank" rel="noopener" class="btn-primary">
+                    <i class="fab fa-google"></i> Abrir no Google Maps
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- JavaScript -->
     <script src="script.js"></script>
