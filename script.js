@@ -451,41 +451,6 @@ class PortfolioManager {
     }
     
     /**
-     * Configura eventos de touch para mobile
-     */
-    setupTouchEvents() {
-        let touchStartY = 0;
-        let touchEndY = 0;
-        
-        document.addEventListener('touchstart', (e) => {
-            touchStartY = e.changedTouches[0].screenY;
-        }, { passive: true });
-        
-        document.addEventListener('touchend', (e) => {
-            touchEndY = e.changedTouches[0].screenY;
-            this.handleSwipe(touchStartY, touchEndY);
-        }, { passive: true });
-    }
-    
-    /**
-     * Gerencia gestos de swipe (mobile)
-     */
-    handleSwipe(startY, endY) {
-        const swipeThreshold = 100;
-        const diff = startY - endY;
-        
-        if (Math.abs(diff) > swipeThreshold) {
-            if (diff > 0) {
-                // Swipe up - pode implementar navegação para próxima seção
-                this.components.navigation.goToNextSection();
-            } else {
-                // Swipe down - pode implementar navegação para seção anterior
-                this.components.navigation.goToPreviousSection();
-            }
-        }
-    }
-    
-    /**
      * Gerencia scroll global
      */
     handleScroll() {
@@ -664,7 +629,7 @@ class NavigationManager {
     }
     
     /**
-     * Navegação para próxima seção (swipe/teclas)
+     * Navegação para próxima seção (apenas para teclado)
      */
     goToNextSection() {
         if (this.currentSection < this.sections.length - 1) {
@@ -674,7 +639,7 @@ class NavigationManager {
     }
     
     /**
-     * Navegação para seção anterior (swipe/teclas)
+     * Navegação para seção anterior (apenas para teclado)
      */
     goToPreviousSection() {
         if (this.currentSection > 0) {
@@ -1545,7 +1510,7 @@ class InteractionManager {
     }
     
     /**
-     * Configura navegação por teclado
+     * Configura navegação por teclado (apenas teclado, não touch)
      */
     setupKeyboardNavigation() {
         document.addEventListener('keydown', (e) => {
