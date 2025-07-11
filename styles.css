@@ -1159,13 +1159,13 @@ section {
     background: var(--secondary-color);
 }
 
-/* Desktop Layout */
+/* Desktop Layout - CORREÇÃO FORÇADA */
 @media screen and (min-width: 769px) {
     .contato-content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--spacing-3xl);
-        align-items: start;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: var(--spacing-3xl) !important;
+        align-items: start !important;
     }
 }
 
@@ -1249,6 +1249,222 @@ section {
     display: block;
     margin-top: var(--spacing-xs);
 }
+
+/* ========================================
+   MINI MAPA E BOTÃO - CORREÇÕES CRÍTICAS
+======================================== */
+
+/* Mini mapa incorporado */
+.mini-mapa {
+    margin-top: var(--spacing-md);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-medium);
+}
+
+.mini-mapa:hover {
+    box-shadow: var(--shadow-md);
+    transform: scale(1.02);
+}
+
+@media screen and (max-width: 768px) {
+    .mini-mapa iframe {
+        height: 120px;
+    }
+}
+
+/* Botão Ver no Maps - CORREÇÃO CRÍTICA DAS CORES */
+.btn-maps {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: var(--spacing-xs) !important;
+    background: var(--gradient-primary) !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    border-radius: var(--border-radius) !important;
+    font-family: var(--font-primary) !important;
+    font-size: var(--font-size-sm) !important;
+    font-weight: var(--font-weight-medium) !important;
+    cursor: pointer !important;
+    margin-top: var(--spacing-md) !important;
+    transition: all var(--transition-medium) !important;
+    box-shadow: var(--shadow-sm) !important;
+    text-decoration: none !important;
+}
+
+.btn-maps i {
+    color: #ffffff !important;
+}
+
+.btn-maps span {
+    color: #ffffff !important;
+}
+
+.btn-maps:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-md) !important;
+    background: var(--primary-dark) !important;
+    color: #ffffff !important;
+}
+
+@media screen and (max-width: 768px) {
+    .btn-maps {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: var(--spacing-md) !important;
+        font-size: var(--font-size-base) !important;
+        min-height: 44px !important;
+    }
+}
+
+/* ========================================
+   MODAL DO MAPS - CORREÇÕES
+======================================== */
+
+/* Modal do Maps */
+.maps-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-medium);
+}
+
+.maps-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.maps-modal-content {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    width: 100%;
+    max-width: 800px;
+    max-height: 710px;
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: all var(--transition-medium);
+}
+
+.maps-modal.show .maps-modal-content {
+    transform: scale(1);
+}
+
+@media screen and (max-width: 768px) {
+    .maps-modal {
+        padding: var(--spacing-sm);
+    }
+    
+    .maps-modal-content {
+        max-height: 95vh;
+        border-radius: var(--border-radius);
+    }
+}
+
+/* Header da Modal */
+.maps-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--secondary-color);
+    background: var(--gradient-secondary);
+}
+
+.maps-modal-header h3 {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-dark);
+    margin: 0;
+}
+
+@media screen and (max-width: 768px) {
+    .maps-modal-header {
+        padding: var(--spacing-md);
+    }
+    
+    .maps-modal-header h3 {
+        font-size: var(--font-size-lg);
+    }
+}
+
+.maps-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    color: var(--text-medium);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: var(--border-radius);
+    transition: all var(--transition-fast);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.maps-close:hover {
+    background: var(--secondary-color);
+    color: var(--text-dark);
+    transform: scale(1.1);
+}
+
+/* Container do mapa */
+.maps-container {
+    width: 100%;
+    height: 500px;
+    position: relative;
+}
+
+@media screen and (max-width: 768px) {
+    .maps-container {
+        height: 400px;
+    }
+}
+
+@media screen and (max-height: 600px) {
+    .maps-container {
+        height: 300px;
+    }
+}
+
+/* Ações da modal */
+.maps-actions {
+    padding: var(--spacing-lg);
+    background: var(--secondary-color);
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid rgba(177, 151, 119, 0.1);
+}
+
+@media screen and (max-width: 768px) {
+    .maps-actions {
+        padding: var(--spacing-md);
+    }
+    
+    .maps-actions .btn-primary {
+        width: 100%;
+    }
+}
+
+/* ========================================
+   FORMULÁRIO
+======================================== */
 
 /* Formulário */
 .contato-form {
@@ -1608,4 +1824,27 @@ section {
         break-inside: avoid;
         page-break-inside: avoid;
     }
+}
+
+/* ========================================
+   FOCO PARA ACESSIBILIDADE
+======================================== */
+.maps-close:focus,
+.btn-maps:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Estado loading do iframe */
+.maps-container iframe {
+    transition: opacity var(--transition-medium);
+}
+
+/* Otimização de performance */
+.maps-modal {
+    will-change: opacity, visibility;
+}
+
+.maps-modal-content {
+    will-change: transform;
 }
