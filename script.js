@@ -448,11 +448,6 @@ class PortfolioManager {
         
         // Visibilidade da página
         document.addEventListener('visibilitychange', () => this.handleVisibilityChange());
-        
-        // Touch events para mobile
-        if (DeviceDetector.hasTouch) {
-            this.setupTouchEvents();
-        }
     }
     
     /**
